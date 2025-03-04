@@ -52,6 +52,7 @@ namespace ristorante_backend.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<IActionResult> Create([FromBody] Categoria categoria)
         {
             try
@@ -71,6 +72,7 @@ namespace ristorante_backend.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize]
         public async Task<IActionResult> Update(int id, [FromBody] Categoria categoria)
         {
             try
