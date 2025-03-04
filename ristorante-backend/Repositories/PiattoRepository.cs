@@ -212,12 +212,13 @@ namespace ristorante_backend.Repositories
             int inserted = 0;
             foreach (int menuId in menu)
             {
-                string query = $"INSERT INTO PiattoMenu (piattoId, manuId) VALUES (@piattoId, @menuId)";
+                string query = $"INSERT INTO PiattoMenu (piattoId, menuId) VALUES (@piattoId, @menuId)";
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
                     cmd.Parameters.AddWithValue("@piattoId", piattoId);
                     cmd.Parameters.AddWithValue("@menuId", menuId);
                     inserted += await cmd.ExecuteNonQueryAsync();
+
                 }
             }
             return inserted;

@@ -164,11 +164,11 @@ namespace ristorante_backend.Controllers
         [HttpDelete("{id}/Menu")]
         [Authorize]
 
-        public async Task<IActionResult> DeletePiattoMenu(int piattoId, int menu)
+        public async Task<IActionResult> DeletePiattoMenu(int id, int menu)
         {
             try
             {
-                int deletedMenu = await PiattoRepository.DeletePiattoMenu(piattoId, menu);
+                int deletedMenu = await PiattoRepository.DeletePiattoMenu(id, menu);
                 if (deletedMenu == 0)
                 {
                     return NotFound();
