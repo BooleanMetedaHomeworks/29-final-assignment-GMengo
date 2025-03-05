@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using ristorante_backend.Models;
 using ristorante_backend.Services;
+using System.Security.Claims;
 
 namespace ristorante_backend.Controllers
 {
@@ -61,6 +62,78 @@ namespace ristorante_backend.Controllers
                 Token = token,
                 ExpirationUtc = DateTime.UtcNow.AddMinutes(_jwtAuthenticationService._jwtSettings.DurationInMinutes)
             });
+        }
+
+        [HttpGet("GetUserRolesById/{userId}")]
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> GetUserRolesById(int userId)
+        {
+            try
+            {
+                Utente u = await _utenteService.GetUserById(userId);
+                if (u == null)
+                {
+                    return NotFound();
+                }
+                var ruoli = await _utenteService.GetUserRolesAsync(userId);
+                if (!ruoli.Any())
+                {
+                    return Ok("utente comune");
+                }
+                return Ok(ruoli);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpGet("GetUserRolesByEmail/{email}")]
+        [Authorize(Roles = "admin")]
+        public async Task<IActionResult> GetUserRolesByEmail(string email)
+        {
+            try
+            {
+                Utente u = await _utenteService.GetUserByEmail(email);
+                if (u == null)
+                {
+                    return NotFound();
+                }
+                var ruoli = await _utenteService.GetUserRolesAsync(u.Id);
+                if (!ruoli.Any())
+                {
+                    return Ok("utente comune");
+                }
+                return Ok(ruoli);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        // Lettura automatica dal JWT nei cookie
+        [HttpGet("GetMyRoles")]
+        [Authorize]
+        public async Task<IActionResult> GetMyRoles()
+        {
+            try
+            {
+                // Estrazione ID utente dal JWT
+                Claim? userEmailClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
+                string? userEmail = userEmailClaim?.Value;
+                Utente u = await _utenteService.GetUserByEmail(userEmail);
+                var ruoli = await _utenteService.GetUserRolesAsync(u.Id);
+                if (ruoli == null)
+                {
+                    return Unauthorized("Utente comune");
+                }
+                return Ok(ruoli);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPost("[Action]")]

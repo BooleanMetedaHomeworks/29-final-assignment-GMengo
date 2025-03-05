@@ -10,7 +10,6 @@ namespace ristorante_frontend
     /// </summary>
     public partial class App : Application
     {
-        public static HttpClient HttpClient { get; } = new HttpClient { BaseAddress = new Uri("http://localhost:5000/") };
     }
 
 }

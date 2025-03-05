@@ -3,14 +3,15 @@
       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
-      xmlns:local="clr-namespace:ristorante_frontend.Views"
+      xmlns:vm="clr-namespace:ristorante_frontend.ViewModels"
+      xmlns:local="clr-namespace:ristorante_frontend.Views" xmlns:viewmodels="clr-namespace:ristorante_frontend.ViewModels" xmlns:toolkit="http://schemas.microsoft.com/netfx/2009/xaml/presentation" d:DataContext="{d:DesignInstance Type=viewmodels:PiattoViewModel}"
       mc:Ignorable="d" 
       d:DesignHeight="450" d:DesignWidth="800"
       Title="UserPage">
 
-    <!--<Page.DataContext>
-        <vm:PiattoViewModels/>
-    </Page.DataContext>-->
+    <Page.DataContext>
+        <vm:PiattoViewModel/>
+    </Page.DataContext>
 
     <Page.Resources>
         <!-- Stile TextBox Moderno -->
@@ -67,17 +68,36 @@
             <!-- Pulsanti con altezza automatica -->
         </Grid.RowDefinitions>
 
-
         <!-- Lista dei Piatti -->
         <Border Grid.Column="0" 
             Background="White" 
             CornerRadius="8" 
             Margin="0,0,0,20"
             Effect="{DynamicResource MaterialDesignShadowDepth1}">
-            <ListView ItemsSource="{Binding Libri}"
-                  SelectedItem="{Binding SelectedLibro}"
+            <ListView ItemsSource="{Binding Piatti}"
+                  SelectedItem="{Binding SelectedPiatto}"
                   BorderThickness="0"
-                  Padding="10">
+                  Padding="10"
+                  ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+
+                <!-- Usiamo UniformGrid per 3 colonne -->
+                <ListView.ItemsPanel>
+                    <ItemsPanelTemplate>
+                        <toolkit:UniformGrid Columns="3" 
+                                       HorizontalAlignment="Stretch"
+                                       VerticalAlignment="Top"/>
+                    </ItemsPanelTemplate>
+                </ListView.ItemsPanel>
+
+                <!-- Stile per gli elementi -->
+                <ListView.ItemContainerStyle>
+                    <Style TargetType="ListViewItem">
+                        <Setter Property="Margin" Value="5"/>
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                        <Setter Property="VerticalContentAlignment" Value="Stretch"/>
+                    </Style>
+                </ListView.ItemContainerStyle>
+
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Border Background="#FFFFFF" 
@@ -85,20 +105,17 @@
                             BorderThickness="1"
                             CornerRadius="4"
                             Padding="15"
-                            Margin="0,5">
+                            HorizontalAlignment="Stretch">
                             <StackPanel>
-                                <TextBlock Text="{Binding Titolo}" 
+                                <TextBlock Text="{Binding Nome}" 
                                        FontSize="16" 
                                        FontWeight="Bold" 
                                        Foreground="#1976D2"/>
-                                <TextBlock Text="{Binding AutoreId[0]}" 
-                                       FontSize="14" 
-                                       Margin="0,5"/>
                                 <TextBlock Text="{Binding Descrizione}" 
                                        TextWrapping="Wrap"
                                        Margin="0,5"
                                        Foreground="#616161"/>
-                                <TextBlock Text="{Binding ISBN}" 
+                                <TextBlock Text="{Binding Prezzo, StringFormat='{}€ {0:N2}'}"
                                        FontStyle="Italic"
                                        Foreground="#9E9E9E"/>
                             </StackPanel>
@@ -115,7 +132,7 @@
             Padding="20" 
             Margin="0,0,0,20"
             Effect="{DynamicResource MaterialDesignShadowDepth1}">
-            <Grid DataContext="{Binding SelectedLibro}">
+            <Grid DataContext="{Binding SelectedPiatto}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="120"/>
                     <ColumnDefinition Width="*"/>
@@ -133,39 +150,36 @@
                      Text="{Binding Nome, UpdateSourceTrigger=PropertyChanged}"
                      Style="{StaticResource ModernTextBox}"/>
 
-                <TextBlock Grid.Row="1" Grid.Column="0" Text="Prezzo €" 
-                       FontSize="14" FontWeight="SemiBold" Margin="0,8,0,0"/>
-                <TextBox Grid.Row="2" Grid.Column="1" 
-                     Text="{Binding Prezzo, UpdateSourceTrigger=PropertyChanged}"
-                     Style="{StaticResource ModernTextBox}"
-                     Height="80" TextWrapping="Wrap" AcceptsReturn="True"/>
-
-                <TextBlock Grid.Row="2" Grid.Column="0" Text="Descrizione" 
+                <TextBlock Grid.Row="1" Grid.Column="0" Text="Descrizione" 
                        FontSize="14" FontWeight="SemiBold" Margin="0,8,0,0"/>
                 <TextBox Grid.Row="1" Grid.Column="1" 
                      Text="{Binding Descrizione, UpdateSourceTrigger=PropertyChanged}"
                      Style="{StaticResource ModernTextBox}"/>
+
+                <TextBlock Grid.Row="2" Grid.Column="0" Text="Prezzo €" 
+                       FontSize="14" FontWeight="SemiBold" Margin="0,8,0,0"/>
+                <TextBox Grid.Row="2" Grid.Column="1" 
+                     Text="{Binding Prezzo, UpdateSourceTrigger=PropertyChanged}"
+                     Style="{StaticResource ModernTextBox}"/>
             </Grid>
         </Border>
 
-
-
         <!-- Pulsanti -->
         <StackPanel Grid.Row="2"
-                    Grid.Column="1"
-                    Orientation="Horizontal" 
-                    HorizontalAlignment="Center">
+                Grid.Column="1"
+                Orientation="Horizontal" 
+                HorizontalAlignment="Center">
             <Button Content="Nuovo" 
-                    Command="{Binding AddLibroCommand}"
-                    Style="{StaticResource ModernButton}"
-                    Background="#4CAF50"/>
+                Command="{Binding AddPiattoCommand}"
+                Style="{StaticResource ModernButton}"
+                Background="#4CAF50"/>
             <Button Content="Elimina" 
-                    Command="{Binding DeleteLibroCommand}"
-                    Style="{StaticResource ModernButton}"
-                    Background="#F44336"/>
+                Command="{Binding DeletePiattoCommand}"
+                Style="{StaticResource ModernButton}"
+                Background="#F44336"/>
             <Button Content="Aggiorna" 
-                    Command="{Binding LoadLibroCommand}"
-                    Style="{StaticResource ModernButton}"/>
+                Command="{Binding LoadPiattiCommand}"
+                Style="{StaticResource ModernButton}"/>
         </StackPanel>
     </Grid>
 </Page>

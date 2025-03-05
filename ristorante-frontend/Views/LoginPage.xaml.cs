@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ristorante_frontend.Services;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,13 +25,28 @@ namespace ristorante_frontend.Views
         {
             InitializeComponent();
         }
-        private void OnLoginBtnClick(object sender, RoutedEventArgs e)
+        private async void OnLoginBtnClickAsync(object sender, RoutedEventArgs e)
         {
-            this.NavigationService.Navigate(new Uri("Views/HomePage.xaml", UriKind.Relative));
+            ApiService.Email = EmailTxt.Text;
+            ApiService.Password = PasswordTxt.Password;
+
+            var result = await ApiService.GetJwtToken();
+
+            if (result.IsConnectionSuccess && result.Data?.Token != null)
+            {
+                NavigationService.Navigate(new Uri("Views/HomePage.xaml", UriKind.Relative));
+            }
+            else
+            {
+                MessageBox.Show(result.ErrorMessage ?? "Errore durante il login",
+                              "Errore",
+                              MessageBoxButton.OK,
+                              MessageBoxImage.Error);
+            }
         }
         private void OnRegisterBtnClick(object sender, RoutedEventArgs e)
         {
-            this.NavigationService.Navigate(new Uri("Views/RegisterPage.xaml", UriKind.Relative));
+            NavigationService.Navigate(new Uri("Views/RegisterPage.xaml", UriKind.Relative));
         }
     }
 }

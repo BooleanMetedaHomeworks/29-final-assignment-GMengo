@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -24,5 +25,27 @@ namespace ristorante_frontend.Views
         {
             InitializeComponent();
         }
+
+        //public static class MathOperations
+        //{
+        //    public static IValueConverter DivideByThreeMinusMargin => new DivideByThreeConverter();
+
+        //    private class DivideByThreeConverter : IValueConverter
+        //    {
+        //        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        //        {
+        //            if (value is double width)
+        //            {
+        //                return (width / 3) - 15; // 15px per margini
+        //            }
+        //            return 200; // Valore di default
+        //        }
+
+        //        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        //        {
+        //            throw new NotImplementedException();
+        //        }
+        //    }
+        //}
     }
 }

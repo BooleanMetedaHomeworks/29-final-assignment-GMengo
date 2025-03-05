@@ -106,5 +106,45 @@ namespace ristorante_backend.Services
             }
             return ruoli;
         }
+
+        public async Task<Utente> GetUserById(int id)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                await connection.OpenAsync();
+                string query = "select * from utente where id = @id";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@id", id);
+                var reader = await command.ExecuteReaderAsync();
+                if (await reader.ReadAsync())
+                {
+                    Utente u = new Utente();
+                    u.Id = reader.GetInt32(reader.GetOrdinal("id"));
+                    u.Email = reader.GetString(reader.GetOrdinal("email"));
+                    return u;
+                }
+            }
+            return null;
+        }
+
+        public async Task<Utente> GetUserByEmail(string email)
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                await connection.OpenAsync();
+                string query = "select * from utente where email = @email";
+                SqlCommand command = new SqlCommand(query, connection);
+                command.Parameters.AddWithValue("@email", email);
+                var reader = await command.ExecuteReaderAsync();
+                if (await reader.ReadAsync())
+                {
+                    Utente u = new Utente();
+                    u.Id = reader.GetInt32(reader.GetOrdinal("id"));
+                    u.Email = reader.GetString(reader.GetOrdinal("email"));
+                    return u;
+                }
+            }
+            return null;
+        }
     }
 }

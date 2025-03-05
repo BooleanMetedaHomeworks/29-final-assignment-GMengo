@@ -6,9 +6,9 @@ using System.Threading.Tasks;
 
 namespace ristorante_frontend.Models
 {
-    internal class Jwt
+    public class Jwt
     {
-        public string Token { get; set; } // stringa base64 ey....
+        public string Token { get; set; } // stringa base64
         public DateTime ExpirationUtc { get; set; }
         public List<string> Roles { get; set; } // Lo decodificheremo dal token
     }

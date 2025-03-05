@@ -1,5 +1,7 @@
-﻿using System;
+﻿using ristorante_frontend.Services;
+using System;
 using System.Net.Http;
+using System.Net.Http.Json;
 using System.Text;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -33,23 +35,27 @@ namespace ristorante_frontend.Views
                 return;
             }
 
-            var user = new { Email = email, Password = password };
-            string json = JsonSerializer.Serialize(user);
-            HttpContent content = new StringContent(json, Encoding.UTF8, "application/json");
-
+            // Utilizzo combinato di ApiService e HttpClient per la gestione errori
             try
             {
-                HttpResponseMessage response = await App.HttpClient.PostAsync("Account/Register", content);
-                string responseText = await response.Content.ReadAsStringAsync();
+                ApiService.Email = email;
+                ApiService.Password = password;
+                var apiResult = await ApiService.Register();
 
-                if (response.IsSuccessStatusCode)
+                if (apiResult.IsConnectionSuccess && apiResult.Data)
                 {
                     MessageBox.Show("Registrazione avvenuta con successo!", "Successo", MessageBoxButton.OK, MessageBoxImage.Information);
-                    NavigationService?.Navigate(new Uri("Views/HomePage.xaml", UriKind.Relative));
+                    NavigationService?.Navigate(new Uri("Views/LoginPage.xaml", UriKind.Relative));
                 }
                 else
                 {
-                    MessageBox.Show($"Errore: {responseText}", "Errore", MessageBoxButton.OK, MessageBoxImage.Error);
+                    // Chiamata aggiuntiva per recuperare il messaggio di errore completo
+                    using HttpClient client = new HttpClient();
+                    var response = await client.PostAsync($"{ApiService.API_URL}/Account/Register",
+                        JsonContent.Create(new { Email = email, Password = password }));
+
+                    var errorContent = await response.Content.ReadAsStringAsync();
+                    MessageBox.Show($"Errore: {errorContent}", "Dettaglio errore", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
             catch (Exception ex)

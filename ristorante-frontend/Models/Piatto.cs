@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ristorante_frontend.Models
 {
-    internal class Piatto
+    public class Piatto
     {
         public int Id { get; set; }
         public string Nome { get; set; }
