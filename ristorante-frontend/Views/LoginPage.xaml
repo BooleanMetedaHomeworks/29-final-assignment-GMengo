@@ -5,10 +5,21 @@
       xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
       xmlns:local="clr-namespace:ristorante_frontend.Views"
       mc:Ignorable="d" 
-      d:DesignHeight="450" d:DesignWidth="800"
+      d:DesignHeight="450" 
+      d:DesignWidth="800"
       Title="LoginPage">
 
-    <Grid Margin="20">
+    <Grid>
+        <!-- Intestazione superiore -->
+        <TextBlock Text="Ristorante da Giovanni" 
+                 FontSize="24"
+                 FontWeight="Medium"
+                 HorizontalAlignment="Center"
+                 VerticalAlignment="Top"
+                 Margin="0,40"
+                 Foreground="#2E7D32"/>
+
+        <!-- Contenitore login centrato -->
         <Border Width="400" 
                 Background="White" 
                 CornerRadius="8" 
@@ -18,11 +29,11 @@
 
             <StackPanel>
                 <TextBlock Text="Benvenuto" 
-                         FontSize="29" 
+                         FontSize="26"
                          FontWeight="Bold" 
                          HorizontalAlignment="Center" 
-                         Margin="0,0,0,30"
-                         Foreground="#1976D2"/>
+                         Margin="0,0,0,25"
+                         Foreground="#388E3C"/>
 
                 <TextBlock Text="Email" 
                          Margin="0,0,0,5" 
@@ -43,19 +54,11 @@
 
                 <Button Content="Accedi" 
                         Click="OnLoginBtnClick" 
-                        Style="{StaticResource ModernButton}"
+                        Style="{StaticResource ModernLoginButton}"
                         Margin="0,0,0,15"/>
                 <Button Content="Registrati" 
                         Click="OnRegisterBtnClick"
-                        Style="{StaticResource ModernButton}"
-                        Background="#4CAF50" Margin="0,0,0,15"/>
-
-                <!--<TextBlock Text="Password dimenticata?" 
-                         HorizontalAlignment="Center" 
-                         Margin="0,20,0,0" 
-                         Foreground="#2196F3" 
-                         FontSize="14"
-                         Cursor="Hand"/>-->
+                        Style="{StaticResource ModernRegisterButton}"/>
             </StackPanel>
         </Border>
     </Grid>
