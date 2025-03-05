@@ -3,22 +3,22 @@ using ristorante_backend.Models;
 
 namespace ristorante_backend.Repositories
 {
-    public class CategoriaRepository
+    public class RistoranteRepository
     {
         private const string connectionString = "Data Source=localhost;Initial Catalog=Ristorante;Integrated Security=True;Trust Server Certificate=True";
 
-        public Categoria ReadCategoria(SqlDataReader reader)
+        public Ristorante ReadRistorante(SqlDataReader reader)
         {
-            Categoria c = new Categoria();
-            c.Id = reader.GetInt32(reader.GetOrdinal("Id"));
-            c.Nome = reader.GetString(reader.GetOrdinal("nome"));
-            return c;
+            Ristorante ristorante = new Ristorante();
+            ristorante.Id = reader.GetInt32(reader.GetOrdinal("Id"));
+            ristorante.Nome = reader.GetString(reader.GetOrdinal("nome"));
+            return ristorante;
         }
 
-        public async Task<List<Categoria>> GetCategorie()
+        public async Task<List<Ristorante>> GetRistoranti()
         {
-            List<Categoria> listaCategorie = new List<Categoria>();
-            string query = "SELECT * FROM Categoria";
+            List<Ristorante> listaCategorie = new List<Ristorante>();
+            string query = "SELECT * FROM Ristorante";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
                 await connection.OpenAsync();
@@ -28,8 +28,8 @@ namespace ristorante_backend.Repositories
                     {
                         while (await reader.ReadAsync())
                         {
-                            Categoria c = ReadCategoria(reader);
-                            listaCategorie.Add(c);
+                            Ristorante ristorante = ReadRistorante(reader);
+                            listaCategorie.Add(ristorante);
                         }
                     }
                 }
@@ -37,10 +37,10 @@ namespace ristorante_backend.Repositories
             return listaCategorie;
         }
 
-        public async Task<List<Categoria>> GetCategorieByNome(string nome)
+        public async Task<List<Ristorante>> GetRistoranteByNome(string nome)
         {
-            List<Categoria> listaCategorie = new List<Categoria>();
-            string query = "SELECT * FROM Categoria where nome like @nome";
+            List<Ristorante> listaCategorie = new List<Ristorante>();
+            string query = "SELECT * FROM Ristorante where nome like @nome";
             using SqlConnection connection = new SqlConnection(connectionString);
             await connection.OpenAsync();
             using SqlCommand command = new SqlCommand(query, connection);
@@ -49,15 +49,15 @@ namespace ristorante_backend.Repositories
             {
                 while (await reader.ReadAsync())
                 {
-                    listaCategorie.Add(ReadCategoria(reader));
+                    listaCategorie.Add(ReadRistorante(reader));
                 }
             }
             return listaCategorie;
         }
 
-        public async Task<Categoria> GetCategoriaById(int id)
+        public async Task<Ristorante> GetRistoranteById(int id)
         {
-            string query = "SELECT TOP 1 * FROM Categoria WHERE id = @id";
+            string query = "SELECT TOP 1 * FROM Ristorante WHERE id = @id";
             using SqlConnection connection = new SqlConnection(connectionString);
             await connection.OpenAsync();
             using SqlCommand cmd = new SqlCommand(query, connection);
@@ -65,38 +65,38 @@ namespace ristorante_backend.Repositories
             using SqlDataReader reader = await cmd.ExecuteReaderAsync();
             if (await reader.ReadAsync())
             {
-                Categoria categoria = ReadCategoria(reader);
-                return categoria;
+                Ristorante ristorante = ReadRistorante(reader);
+                return ristorante;
             }
             return null;
         }
 
-        public async Task<int> InsertCategoria(Categoria categoria)
+        public async Task<int> InsertRistorante(Ristorante ristorante)
         {
-            string query = "INSERT INTO Categoria (nome) VALUES (@nome)" + "SELECT SCOPE_IDENTITY()";
+            string query = "INSERT INTO Ristorante (nome) VALUES (@nome)" + "SELECT SCOPE_IDENTITY()";
             using SqlConnection connection = new SqlConnection(connectionString);
             await connection.OpenAsync();
             using SqlCommand cmd = new SqlCommand(query, connection);
-            cmd.Parameters.AddWithValue("@nome", categoria.Nome);
+            cmd.Parameters.AddWithValue("@nome", ristorante.Nome);
 
             return Convert.ToInt32(await cmd.ExecuteScalarAsync()); ;
         }
 
-        public async Task<int> UpdateCategoria(int id, Categoria categoria)
+        public async Task<int> UpdateRistorante(int id, Ristorante ristorante)
         {
-            string query = "UPDATE Categoria SET nome = @nome WHERE id = @id";
+            string query = "UPDATE Ristorante SET nome = @nome WHERE id = @id";
             using SqlConnection connection = new SqlConnection(connectionString);
             await connection.OpenAsync();
             using SqlCommand cmd = new SqlCommand(query, connection);
             cmd.Parameters.AddWithValue("@id", id);
-            cmd.Parameters.AddWithValue("@nome", categoria.Nome);
+            cmd.Parameters.AddWithValue("@nome", ristorante.Nome);
 
             return await cmd.ExecuteNonQueryAsync();
         }
 
-        public async Task<int> DeleteCategoria(int id)
+        public async Task<int> DeleteRistorante(int id)
         {
-            string query = "DELETE FROM Categoria WHERE id = @id";
+            string query = "DELETE FROM Ristorante WHERE id = @id";
             using SqlConnection connection = new SqlConnection(connectionString);
             await connection.OpenAsync();
             using SqlCommand cmd = new SqlCommand(query, connection);
@@ -104,6 +104,5 @@ namespace ristorante_backend.Repositories
 
             return await cmd.ExecuteNonQueryAsync();
         }
-
     }
 }

@@ -34,7 +34,10 @@ namespace ristorante_backend.Repositories
             {
                 int menuId = r.GetInt32(r.GetOrdinal("Id_Menu"));
                 string menuNome = r.GetString(r.GetOrdinal("nome_Menu"));
-                Menu m = new Menu(menuId, menuNome);
+                int ristoranteId = r.GetInt32(r.GetOrdinal("Id_Ristorante"));
+                string ristoranteNome = r.GetString(r.GetOrdinal("Nome_Ristorante"));
+                Ristorante ristorante = new Ristorante(ristoranteId, ristoranteNome);
+                Menu m = new Menu(menuId, menuNome, ristoranteId, ristorante);
                 piatto.MenuId.Add(menuId);
                 piatto.Menu.Add(m);
             }
@@ -44,11 +47,12 @@ namespace ristorante_backend.Repositories
         {
             Dictionary<int, Piatto> piatti = new Dictionary<int, Piatto>();
 
-            string query = @$"SELECT {(limit == null ? "" : $"TOP {limit}")} p.*, C.Id as Id_Categoria, C.nome as nome_Categoria, M.Id as Id_Menu, M.nome as nome_Menu
+            string query = @$"SELECT {(limit == null ? "" : $"TOP {limit}")} p.*, C.Id as Id_Categoria, C.nome as nome_Categoria, M.Id as Id_Menu, M.nome as nome_Menu, R.Id as Id_Ristorante, R.Nome as Nome_Ristorante
                              FROM piatto p
                              LEFT JOIN Categoria C on p.CategoriaId = C.Id
                              LEFT JOIN PiattoMenu PM on PM.piattoId = P.Id
                              LEFT JOIN Menu M on PM.MenuId = M.Id
+                             INNER JOIN Ristorante R on M.ristoranteId = R.Id
                             ";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -70,11 +74,12 @@ namespace ristorante_backend.Repositories
         {
             Dictionary<int, Piatto> piatti = new Dictionary<int, Piatto>();
 
-            string query = @$"SELECT p.*, C.Id as Id_Categoria, C.nome as nome_Categoria, M.Id as Id_Menu, M.nome as nome_Menu
+            string query = @$"SELECT p.*, C.Id as Id_Categoria, C.nome as nome_Categoria, M.Id as Id_Menu, M.nome as nome_Menu, R.Id as Id_Ristorante, R.Nome as Nome_Ristorante
                              FROM piatto p
                              LEFT JOIN Categoria C on p.CategoriaId = C.Id
                              LEFT JOIN PiattoMenu PM on PM.piattoId = P.Id
                              LEFT JOIN Menu M on PM.MenuId = M.Id
+                             INNER JOIN Ristorante R on M.ristoranteId = R.Id
                              WHERE p.nome like @nome
                             ";
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -101,11 +106,12 @@ namespace ristorante_backend.Repositories
         {
             Dictionary<int, Piatto> piatti = new Dictionary<int, Piatto>();
 
-            string query = @$"SELECT p.*, C.Id as Id_Categoria, C.nome as nome_Categoria, M.Id as Id_Menu, M.nome as nome_Menu
+            string query = @$"SELECT p.*, C.Id as Id_Categoria, C.nome as nome_Categoria, M.Id as Id_Menu, M.nome as nome_Menu, R.Id as Id_Ristorante, R.Nome as Nome_Ristorante
                              FROM piatto p
                              LEFT JOIN Categoria C on p.CategoriaId = C.Id
                              LEFT JOIN PiattoMenu PM on PM.piattoId = P.Id
                              LEFT JOIN Menu M on PM.MenuId = M.Id
+                             INNER JOIN Ristorante R on M.ristoranteId = R.Id
                              WHERE p.id = @id
                             ";
 
@@ -208,10 +214,12 @@ namespace ristorante_backend.Repositories
         {
             using SqlConnection conn = new SqlConnection(connectionString);
             await conn.OpenAsync();
-
+            Piatto p = await GetPiattoByIdAsync(piattoId);
             int inserted = 0;
             foreach (int menuId in menu)
             {
+                if (p.MenuId.Contains(menuId))
+                    continue;
                 string query = $"INSERT INTO PiattoMenu (piattoId, menuId) VALUES (@piattoId, @menuId)";
                 using (SqlCommand cmd = new SqlCommand(query, conn))
                 {
@@ -220,6 +228,7 @@ namespace ristorante_backend.Repositories
                     inserted += await cmd.ExecuteNonQueryAsync();
 
                 }
+                    
             }
             return inserted;
         }

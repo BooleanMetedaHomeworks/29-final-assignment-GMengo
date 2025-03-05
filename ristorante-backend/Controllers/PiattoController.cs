@@ -74,9 +74,35 @@ namespace ristorante_backend.Controllers
             }
         }
 
+        [HttpGet("Top")]
+        public async Task<IActionResult> GetLimit(int? limit)
+        {
+
+            try
+            {
+                if (limit == null)
+                {
+                    List<Piatto> result = (await PiattoRepository.GetAllPiatto());
+                    return Ok(result);
+
+
+                }
+                else
+                {
+                    List<Piatto> result = (await PiattoRepository.GetAllPiatto(limit));
+                    return Ok(result);
+                }
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
 
         [HttpPost]
-        [Authorize]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> CreatePiatto([FromBody] Piatto p)
         {
             try
@@ -96,7 +122,7 @@ namespace ristorante_backend.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize]
+        [Authorize(Roles = "admin")]
 
         public async Task<IActionResult> UpdatePiatto(int id, [FromBody] Piatto updatedPiatto)
         {
@@ -122,17 +148,17 @@ namespace ristorante_backend.Controllers
 
 
         [HttpPost("{id}/Menu")]
-        [Authorize]
+        [Authorize(Roles = "admin")]
         public async Task<IActionResult> AddPiattoMenu(int id, [FromBody]List<int> menu)
         {
             try
             {
-                int menuInseriti = await PiattoRepository.AddPiattoMenu(id, menu);
-                if (menuInseriti == 0)
+                if (await PiattoRepository.GetPiattoByIdAsync(id) == null)
                 {
                     return NotFound();
                 }
-                return Ok(1);
+                int menuInseriti = await PiattoRepository.AddPiattoMenu(id, menu);
+                return Ok($"Sono stati inseriti {menuInseriti} menù");
             }
             catch (Exception e)
             {
@@ -142,7 +168,7 @@ namespace ristorante_backend.Controllers
 
 
         [HttpDelete("{id}")]
-        [Authorize]
+        [Authorize(Roles = "admin")]
 
         public async Task<IActionResult> DeletePiatto(int id)
         {
@@ -162,7 +188,7 @@ namespace ristorante_backend.Controllers
         }
 
         [HttpDelete("{id}/Menu")]
-        [Authorize]
+        [Authorize(Roles = "admin")]
 
         public async Task<IActionResult> DeletePiattoMenu(int id, int menu)
         {

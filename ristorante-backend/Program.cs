@@ -47,6 +47,7 @@ namespace ristorante_backend
             builder.Services.AddSingleton<ICustomLogger, CustomConsoleLogger>();
             builder.Services.AddSingleton<PiattoRepository>();
             builder.Services.AddSingleton<CategoriaRepository>();
+            builder.Services.AddSingleton<RistoranteRepository>();
             builder.Services.AddSingleton<MenuRepository>();
             builder.Services.AddScoped<IPasswordHasher<UtenteModel>, PasswordHasher<UtenteModel>>();
             builder.Services.AddScoped<JwtAuthenticationService>();

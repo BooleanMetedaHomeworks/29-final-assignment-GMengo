@@ -19,6 +19,7 @@ namespace ristorante_backend.Controllers
         }
 
         [HttpGet]
+        [Authorize]
 
         public async Task<IActionResult> Get()
         {
@@ -33,6 +34,7 @@ namespace ristorante_backend.Controllers
         }
 
         [HttpGet("{id}")]
+        [Authorize]
 
         public async Task<IActionResult> GetMenuById(int id)
         {
@@ -52,8 +54,50 @@ namespace ristorante_backend.Controllers
 
         }
 
-        [HttpPost]
+        [HttpGet("{id}/Piatti")]
         [Authorize]
+
+        public async Task<IActionResult> GetMenuPiattiById(int id)
+        {
+            try
+            {
+                List<Piatto> piatti = await _menuRepository.GetAllPiattoFromMenuId(id);
+                if (piatti == null)
+                {
+                    return NotFound();
+                }
+                return Ok(piatti);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+        [HttpGet("Piatti")]
+        [Authorize]
+
+        public async Task<IActionResult> GetMenuPiattiByNome(string nome)
+        {
+            try
+            {
+                List<Piatto> piatti = await _menuRepository.GetAllPiattoFromMenuNome(nome);
+                if (piatti == null)
+                {
+                    return NotFound();
+                }
+                return Ok(piatti);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "admin")]
 
         public async Task<IActionResult> Create([FromBody] Menu menu)
         {
@@ -74,7 +118,7 @@ namespace ristorante_backend.Controllers
         }
 
         [HttpPut("{id}")]
-        [Authorize]
+        [Authorize(Roles = "admin")]
 
         public async Task<IActionResult> Update(int id, [FromBody] Menu menu)
         {
@@ -98,7 +142,7 @@ namespace ristorante_backend.Controllers
         }
 
         [HttpDelete("{id}")]
-        [Authorize]
+        [Authorize(Roles = "admin")]
 
         public async Task<IActionResult> Delete(int id)
         {

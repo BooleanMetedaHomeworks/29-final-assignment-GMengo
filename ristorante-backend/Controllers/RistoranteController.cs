@@ -8,12 +8,12 @@ namespace ristorante_backend.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class CategoriaController : ControllerBase
+    public class RistoranteController : ControllerBase
     {
-        private CategoriaRepository _categoriaRepository;
-        public CategoriaController(CategoriaRepository categoriaRepository)
+        private RistoranteRepository _ristoranteRepository;
+        public RistoranteController(RistoranteRepository ristoranteRepository)
         {
-            _categoriaRepository = categoriaRepository;
+            _ristoranteRepository = ristoranteRepository;
         }
 
         [HttpGet]
@@ -24,11 +24,11 @@ namespace ristorante_backend.Controllers
             {
                 if (nome == null)
                 {
-                    return Ok(await _categoriaRepository.GetCategorie());
+                    return Ok(await _ristoranteRepository.GetRistoranti());
                 }
                 else
                 {
-                    return Ok(await _categoriaRepository.GetCategorieByNome(nome));
+                    return Ok(await _ristoranteRepository.GetRistoranteByNome(nome));
                 }
 
             }
@@ -44,8 +44,8 @@ namespace ristorante_backend.Controllers
         {
             try
             {
-                Categoria categoria = await _categoriaRepository.GetCategoriaById(id);
-                return categoria == null ? NotFound() : Ok(categoria);
+                Ristorante ristorante = await _ristoranteRepository.GetRistoranteById(id);
+                return ristorante == null ? NotFound() : Ok(ristorante);
             }
             catch (Exception ex)
             {
@@ -55,7 +55,7 @@ namespace ristorante_backend.Controllers
 
         [HttpPost]
         [Authorize(Roles = "admin")]
-        public async Task<IActionResult> Create([FromBody] Categoria categoria)
+        public async Task<IActionResult> Create([FromBody] Ristorante ristorante)
         {
             try
             {
@@ -63,9 +63,9 @@ namespace ristorante_backend.Controllers
                 {
                     return BadRequest(ModelState.Values);
                 }
-                categoria.Id = 0;
-                int createdCategoriaId = await _categoriaRepository.InsertCategoria(categoria);
-                return Created($"/{ControllerContext.ActionDescriptor.ControllerName}/{createdCategoriaId}", $"è stata crata una categoria con l' id: {createdCategoriaId}");
+                ristorante.Id = 0;
+                int createdRistoranteId = await _ristoranteRepository.InsertRistorante(ristorante);
+                return Created($"/{ControllerContext.ActionDescriptor.ControllerName}/{createdRistoranteId}", $"è stato crato una ristorante con l' id: {createdRistoranteId}");
             }
             catch (Exception ex)
             {
@@ -75,7 +75,7 @@ namespace ristorante_backend.Controllers
 
         [HttpPut("{id}")]
         [Authorize(Roles = "admin")]
-        public async Task<IActionResult> Update(int id, [FromBody] Categoria categoria)
+        public async Task<IActionResult> Update(int id, [FromBody] Ristorante ristorante)
         {
             try
             {
@@ -83,7 +83,7 @@ namespace ristorante_backend.Controllers
                 {
                     return BadRequest(ModelState.Values);
                 }
-                int affectedRows = await _categoriaRepository.UpdateCategoria(id, categoria);
+                int affectedRows = await _ristoranteRepository.UpdateRistorante(id, ristorante);
                 if (affectedRows == 0)
                 {
                     return NotFound();
@@ -102,7 +102,7 @@ namespace ristorante_backend.Controllers
         {
             try
             {
-                int affectedRows = await _categoriaRepository.DeleteCategoria(id);
+                int affectedRows = await _ristoranteRepository.DeleteRistorante(id);
                 if (affectedRows == 0)
                 {
                     return NotFound();
@@ -115,4 +115,5 @@ namespace ristorante_backend.Controllers
             }
         }
     }
+
 }
