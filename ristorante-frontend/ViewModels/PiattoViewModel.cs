@@ -15,18 +15,16 @@ namespace ristorante_frontend.ViewModels
 {
     public class PiattoViewModel : INotifyPropertyChanged
     {
-        private readonly HttpClient _httpClient = new HttpClient();
-        private const string ApiBaseUrl = "http://localhost:5000/Piatto";
         private Jwt _token;
 
         public PiattoViewModel()
         {
             Piatti = new ObservableCollection<Piatto>();
+            SelectedPiatto = new Piatto();
             LoadPiattiCommand = new MyCommand(async () => await LoadPiatti());
             AddPiattoCommand = new MyCommand(async () => await AddPiatto());
-            DeletePiattoCommand = new MyCommand(
-                execute: async () => await DeletePiatto(),
-                canExecute: () => SelectedPiatto != null);
+            DeletePiattoCommand = new MyCommand(async () => await DeletePiatto());
+            UpdatePiattoCommand = new MyCommand(async () => await UpdatePiatto());
             _ = InitializeAsync();
         }
 
@@ -69,17 +67,15 @@ namespace ristorante_frontend.ViewModels
         public ICommand LoadPiattiCommand { get; }
         public ICommand AddPiattoCommand { get; }
         public ICommand DeletePiattoCommand { get; }
+        public ICommand UpdatePiattoCommand { get; }
 
         private async Task LoadPiatti()
         {
             try
             {
-                var response = await _httpClient.GetAsync(ApiBaseUrl);
-                response.EnsureSuccessStatusCode();
-
-                var content = await response.Content.ReadAsStringAsync();
-                var piatti = JsonConvert.DeserializeObject<List<Piatto>>(content);
-                Piatti = new ObservableCollection<Piatto>(piatti);
+                ApiServiceResult<List<Piatto>> createApiResult = await ApiService.GetPiatto();
+                Piatti = new ObservableCollection<Piatto>(createApiResult.Data);
+                SelectedPiatto = new Piatto();
             }
             catch (Exception ex)
             {
@@ -87,20 +83,25 @@ namespace ristorante_frontend.ViewModels
             }
         }
 
+        public void VerificaPiatto(Piatto piatto)
+        {
+            // di default il SelectPiatto ha prezzo 0, valore che un piatto reale non può avere, deve valere minimo 10 centesimi,
+            // quindi mi manda in errore quando provo a utilizzare la POST PUT o DELETE senza avere selezionato niente,
+            // errore che poi verrà gestito nel catch dei rispettivi metodi
+            if (piatto.Prezzo == 0)
+            {
+                throw new Exception("INSERIRE UN PIATTO!");
+            }
+        }
+
         private async Task AddPiatto()
         {
             try
             {
-                // creo un piatto in memoria
-                Piatto newPiatto = new Piatto
-                {
-                    Nome = "Nuovo piatto",
-                    Descrizione = "Descrizione",
-                    Prezzo = 0.0
-                };
+                VerificaPiatto(SelectedPiatto);
 
                 // chiamo l' API per inserire il piatto nel DB
-                var createApiResult = await ApiService.CreatePiatto(newPiatto, _token);
+                ApiServiceResult<int> createApiResult = await ApiService.CreatePiatto(SelectedPiatto, _token);
                 if (createApiResult.Data == null)
                 {
                     MessageBox.Show($"Errore nell'aggiunta del piatto: {createApiResult.ErrorMessage}", "Errore", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -117,14 +118,17 @@ namespace ristorante_frontend.ViewModels
 
         private async Task DeletePiatto()
         {
-            if (SelectedPiatto == null)
-            {
-                MessageBox.Show("Seleziona un piatto da eliminare", "Attenzione", MessageBoxButton.OK, MessageBoxImage.Warning);
-                return;
-            }
+
+            // questa era la gestione vecchia, ora il SelectedPiatto non potrà mai essere null perchè viene creato un oggetto vuoto sia dal costruttore che ogni volta che viene chiamato il LoadPiatto();
+            //if (SelectedPiatto == null)
+            //{
+            //    MessageBox.Show("Seleziona un piatto da eliminare", "Attenzione", MessageBoxButton.OK, MessageBoxImage.Warning);
+            //    return;
+            //}
 
             try
             {
+                VerificaPiatto(SelectedPiatto);
                 var deleteApiResult = await ApiService.DeletePiatto(SelectedPiatto.Id, _token);
                 if (deleteApiResult.Data == 0)
                 {
@@ -132,10 +136,39 @@ namespace ristorante_frontend.ViewModels
                     return;
                 }
                 await LoadPiatti(); // Aggiorno il view model solo in caso di successo
+                
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Errore nell'eliminazione del piatto: {ex.Message}", "Errore", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+        }
+
+        private async Task UpdatePiatto()
+        {
+
+            // questa era la gestione vecchia, ora il SelectedPiatto non potrà mai essere null perchè viene creato un oggetto vuoto sia dal costruttore che ogni volta che viene chiamato il LoadPiatto();
+            //if (SelectedPiatto == null)
+            //{
+            //    MessageBox.Show("Seleziona un piatto da modificare", "Attenzione", MessageBoxButton.OK, MessageBoxImage.Warning);
+            //    return;
+            //}
+
+            try
+            {
+                VerificaPiatto(SelectedPiatto);
+                var updateApiResult = await ApiService.UpdatePiatto(SelectedPiatto, _token);
+                if (updateApiResult.Data == 0)
+                {
+                    MessageBox.Show($"Errore nella modifica del piatto: {updateApiResult.ErrorMessage}", "Errore", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                await LoadPiatti(); // Aggiorno il view model solo in caso di successo
+
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Errore nella modifica del piatto: {ex.Message}", "Errore", MessageBoxButton.OK, MessageBoxImage.Error);
             }
         }
 

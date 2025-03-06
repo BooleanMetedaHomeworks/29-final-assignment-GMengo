@@ -113,10 +113,11 @@ namespace ristorante_backend.Controllers
                 }
                 p.Id = 0; 
                 (int piattoID, Piatto createdPiatto) createdTupla = await PiattoRepository.CreatePiatto(p);
-                return Created($"/{ControllerContext.ActionDescriptor.ControllerName}/{createdTupla.piattoID}", $"è stato creato un piatto con id: {createdTupla.piattoID} e nome: {createdTupla.createdPiatto.Nome}");
+                //return Created($"/{ControllerContext.ActionDescriptor.ControllerName}/{createdTupla.piattoID}", $"è stato creato un piatto con id: {createdTupla.piattoID} e nome: {createdTupla.createdPiatto.Nome}");
                 // il return sotto sarebbe quello corretto, perchè dobbiamo sempre restituire il minimo indispensabile, sia per efficienza che per praticità, serve dato strutturato da poter utilizzare (molto importante questo passaggio, prioritario)
                 // restituisci un intero senza dare spiegazioni di che cosa sia
-                // return Created($"/{ControllerContext.ActionDescriptor.ControllerName}/{createdTupla.piattoID}", createdTupla.piattoID);
+                // non è il modo migliore, sarebbe meglio quello con oggetto anonimo per chiarezza del dato, però è quello che mi risulta più comodo al momento per la gestione con il frontend
+                return Created($"/{ControllerContext.ActionDescriptor.ControllerName}/{createdTupla.piattoID}", createdTupla.piattoID);
                 // restituisci un oggetto anonimo, rende chiaro il valore del dato a che cosa appartiene
                 // return Created($"/{ControllerContext.ActionDescriptor.ControllerName}/{createdTupla.piattoID}", new { piattoId = createdTupla.piattoID });
             }

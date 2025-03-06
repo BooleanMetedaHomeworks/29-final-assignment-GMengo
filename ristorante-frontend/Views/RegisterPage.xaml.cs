@@ -45,7 +45,7 @@ namespace ristorante_frontend.Views
                 if (apiResult.IsConnectionSuccess && apiResult.Data)
                 {
                     MessageBox.Show("Registrazione avvenuta con successo!", "Successo", MessageBoxButton.OK, MessageBoxImage.Information);
-                    NavigationService?.Navigate(new Uri("Views/LoginPage.xaml", UriKind.Relative));
+                    NavigationService?.Navigate(new Uri("Views/HomePage.xaml", UriKind.Relative));
                 }
                 else
                 {
