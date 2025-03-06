@@ -10,13 +10,21 @@
       Title="LoginPage">
 
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="19*"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
         <!-- Intestazione superiore -->
         <TextBlock Text="Ristorante da Giovanni" 
                  FontSize="24"
                  FontWeight="Medium"
                  HorizontalAlignment="Center"
                  VerticalAlignment="Top"
-                 Margin="0,40"
+                 Grid.Row="1"
+                 Grid.Column="1"
                  Foreground="#2E7D32"/>
 
         <!-- Contenitore login centrato -->
@@ -24,6 +32,8 @@
                 Background="White" 
                 CornerRadius="8" 
                 Padding="30"
+                Grid.Row="2"
+                Grid.Column="1"
                 HorizontalAlignment="Center" 
                 VerticalAlignment="Center">
 

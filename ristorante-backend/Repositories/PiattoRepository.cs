@@ -52,7 +52,7 @@ namespace ristorante_backend.Repositories
                              LEFT JOIN Categoria C on p.CategoriaId = C.Id
                              LEFT JOIN PiattoMenu PM on PM.piattoId = P.Id
                              LEFT JOIN Menu M on PM.MenuId = M.Id
-                             INNER JOIN Ristorante R on M.ristoranteId = R.Id
+                             LEFT JOIN Ristorante R on M.ristoranteId = R.Id
                             ";
             using (SqlConnection connection = new SqlConnection(connectionString))
             {
@@ -79,7 +79,7 @@ namespace ristorante_backend.Repositories
                              LEFT JOIN Categoria C on p.CategoriaId = C.Id
                              LEFT JOIN PiattoMenu PM on PM.piattoId = P.Id
                              LEFT JOIN Menu M on PM.MenuId = M.Id
-                             INNER JOIN Ristorante R on M.ristoranteId = R.Id
+                             LEFT JOIN Ristorante R on M.ristoranteId = R.Id
                              WHERE p.nome like @nome
                             ";
             using (SqlConnection connection = new SqlConnection(connectionString))
@@ -111,7 +111,7 @@ namespace ristorante_backend.Repositories
                              LEFT JOIN Categoria C on p.CategoriaId = C.Id
                              LEFT JOIN PiattoMenu PM on PM.piattoId = P.Id
                              LEFT JOIN Menu M on PM.MenuId = M.Id
-                             INNER JOIN Ristorante R on M.ristoranteId = R.Id
+                             LEFT JOIN Ristorante R on M.ristoranteId = R.Id
                              WHERE p.id = @id
                             ";
 

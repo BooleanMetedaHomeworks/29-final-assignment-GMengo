@@ -8,7 +8,8 @@ using System.Text;
 using System.Windows;
 using System; // Aggiunto per Exception e Console
 using System.Collections.Generic; // Aggiunto per List<T>
-using System.Threading.Tasks; // Aggiunto per Task
+using System.Threading.Tasks;
+using ristorante_frontend.Services; // Aggiunto per Task
 
 namespace ristorante_frontend.ViewModels
 {
@@ -16,6 +17,7 @@ namespace ristorante_frontend.ViewModels
     {
         private readonly HttpClient _httpClient = new HttpClient();
         private const string ApiBaseUrl = "http://localhost:5000/Piatto";
+        private Jwt _token;
 
         public PiattoViewModel()
         {
@@ -30,6 +32,14 @@ namespace ristorante_frontend.ViewModels
 
         private async Task InitializeAsync()
         {
+            // Richiedo il JWT
+            var tokenApiResult = await ApiService.GetJwtToken();
+            if (tokenApiResult.Data == null)
+            {
+                MessageBox.Show($"ERRORE di login! {tokenApiResult.ErrorMessage}");
+                return;
+            }
+            _token = tokenApiResult.Data;
             await LoadPiatti();
         }
 
@@ -81,19 +91,22 @@ namespace ristorante_frontend.ViewModels
         {
             try
             {
-                var newPiatto = new Piatto
+                // creo un piatto in memoria
+                Piatto newPiatto = new Piatto
                 {
                     Nome = "Nuovo piatto",
                     Descrizione = "Descrizione",
                     Prezzo = 0.0
                 };
 
-                var json = JsonConvert.SerializeObject(newPiatto);
-                var response = await _httpClient.PostAsync(
-                    ApiBaseUrl,
-                    new StringContent(json, Encoding.UTF8, "application/json"));
-
-                response.EnsureSuccessStatusCode();
+                // chiamo l' API per inserire il piatto nel DB
+                var createApiResult = await ApiService.CreatePiatto(newPiatto, _token);
+                if (createApiResult.Data == null)
+                {
+                    MessageBox.Show($"Errore nell'aggiunta del piatto: {createApiResult.ErrorMessage}", "Errore", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                // Aggiorno la view solo in caso di successo (altrimenti sarei finito nel return di prima)
                 await LoadPiatti();
             }
             catch (Exception ex)
@@ -112,9 +125,13 @@ namespace ristorante_frontend.ViewModels
 
             try
             {
-                var response = await _httpClient.DeleteAsync($"{ApiBaseUrl}/{SelectedPiatto.Id}");
-                response.EnsureSuccessStatusCode();
-                Piatti.Remove(SelectedPiatto);
+                var deleteApiResult = await ApiService.DeletePiatto(SelectedPiatto.Id, _token);
+                if (deleteApiResult.Data == 0)
+                {
+                    MessageBox.Show($"Errore nell'eliminazione del piatto: {deleteApiResult.ErrorMessage}", "Errore", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                await LoadPiatti(); // Aggiorno il view model solo in caso di successo
             }
             catch (Exception ex)
             {

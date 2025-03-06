@@ -5,6 +5,7 @@ using System.Security.Claims;
 using Newtonsoft.Json;
 using System.IdentityModel.Tokens.Jwt;
 using System.Text.Json;
+using System.Net.Http.Headers;
 
 namespace ristorante_frontend.Services
 {
@@ -115,6 +116,84 @@ namespace ristorante_frontend.Services
                 jwt.Roles = roles;
             }
             catch { } // Se succede qualcosa non facciamo nulla
+        }
+
+        public static async Task<ApiServiceResult<List<Piatto>>> GetPiatto()
+        {
+            try
+            {
+                using HttpClient client = new HttpClient();
+                var httpResult = await client.GetAsync($"{API_URL}/Piatto");
+                var resultBody = await httpResult.Content.ReadAsStringAsync();
+                var data = JsonConvert.DeserializeObject<List<Piatto>>(resultBody);
+                return new ApiServiceResult<List<Piatto>>(data);
+            }
+            catch (Exception e)
+            {
+                return new ApiServiceResult<List<Piatto>>(e);
+            }
+        }
+
+        /// <summary>
+        /// Richiama l'API per creare un piatto e ne ritorna, in caso di successo, un interno che rappresenta l'ID del nuovo piatto
+        /// </summary>
+        /// <param name="newPiatto"></param>
+        /// <param name="jwt"></param>
+        /// <returns></returns>
+        public static async Task<ApiServiceResult<int>> CreatePiatto(Piatto newPiatto, Jwt jwt)
+        {
+            try
+            {
+                using HttpClient httpClient = new HttpClient();
+                // Devo aggiungere il JWT
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", jwt.Token);
+
+                var httpResult = await httpClient.PostAsync($"{API_URL}/Piatto", JsonContent.Create(newPiatto));
+                var resultBody = await httpResult.Content.ReadAsStringAsync();
+                var data = JsonConvert.DeserializeObject<int>(resultBody); // L'API ritorna un intero che rappresenta il nuovo ID del piatto
+                return new ApiServiceResult<int>(data);
+            }
+            catch (Exception e)
+            {
+                return new ApiServiceResult<int>(e);
+            }
+        }
+        /// <summary>
+        /// Richiamo l'API per aggiornare un piatto. Ritorna il numero di righe interessate
+        /// </summary>
+        public static async Task<ApiServiceResult<int>> UpdatePiatto(Piatto piatto, Jwt token)
+        {
+            try
+            {
+                using HttpClient httpClient = new HttpClient();
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Token);
+
+                var httpResult = await httpClient.PutAsync($"{API_URL}/Piatto/{piatto.Id}", JsonContent.Create(piatto));
+                var resultBody = await httpResult.Content.ReadAsStringAsync();
+                var data = JsonConvert.DeserializeObject<int>(resultBody);
+                return new ApiServiceResult<int>(data);
+            }
+            catch (Exception e)
+            {
+                return new ApiServiceResult<int>(e);
+            }
+        }
+        public static async Task<ApiServiceResult<int>> DeletePiatto(int piattoId, Jwt token)
+        {
+            try
+            {
+                using HttpClient httpClient = new HttpClient();
+                httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token.Token);
+
+                var httpResult = await httpClient.DeleteAsync($"{API_URL}/Piatto/{piattoId}");
+                var resultBody = await httpResult.Content.ReadAsStringAsync();
+                var data = JsonConvert.DeserializeObject<int>(resultBody);
+                return new ApiServiceResult<int>(data);
+            }
+            catch (Exception e)
+            {
+                return new ApiServiceResult<int>(e);
+            }
         }
     }
 }
