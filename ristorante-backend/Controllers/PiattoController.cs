@@ -213,6 +213,24 @@ namespace ristorante_backend.Controllers
             }
         }
 
+        [HttpGet("{piattoId}/Voti")]
 
+        public async Task<IActionResult> GetVoti(int piattoId)
+        {
+            try
+            {
+                Tuple<double,int> tupla = await PiattoRepository.GetVoti(piattoId);
+                if (tupla.Item2 == 0)
+                {
+                    return NotFound();
+                }
+                return Ok(new {mediaVoti = tupla.Item1, totaleVoti = tupla.Item2});
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+
+        }
     }
 }

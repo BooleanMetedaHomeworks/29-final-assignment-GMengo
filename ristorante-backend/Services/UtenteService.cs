@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using System.Security.Claims;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Data.SqlClient;
 using ristorante_backend.Models;
 
@@ -145,6 +146,41 @@ namespace ristorante_backend.Services
                 }
             }
             return null;
+        }
+
+        public async Task<int> PostVotoPiatto(int piattoId, int utenteId, int voto)
+        {
+            using SqlConnection connection = new SqlConnection(connectionString);
+            await connection.OpenAsync();
+            string query = "INSERT INTO PiattoUtenteVoto (piattoId, utenteId, voto) values (@piattoId, @utenteId, @voto)";
+            SqlCommand cmd = new SqlCommand(query, connection);
+            cmd.Parameters.AddWithValue("@piattoId", piattoId);
+            cmd.Parameters.AddWithValue("@utenteId", utenteId);
+            cmd.Parameters.AddWithValue("@voto", voto);
+            return await cmd.ExecuteNonQueryAsync();
+        }
+
+        public async Task<int> PutVotoPiatto(int piattoId, int utenteId, int voto)
+        {
+            using SqlConnection connection = new SqlConnection(connectionString);
+            await connection.OpenAsync();
+            string query = "UPDATE PiattoUtenteVoto SET voto = @voto WHERE piattoId = @piattoId and utenteId = @utenteId";
+            SqlCommand cmd = new SqlCommand(query, connection);
+            cmd.Parameters.AddWithValue("@piattoId", piattoId);
+            cmd.Parameters.AddWithValue("@utenteId", utenteId);
+            cmd.Parameters.AddWithValue("@voto", voto);
+            return await cmd.ExecuteNonQueryAsync();
+        }
+
+        public async Task<int> DeleteVotoPiatto(int piattoId, int utenteId)
+        {
+            using SqlConnection connection = new SqlConnection(connectionString);
+            await connection.OpenAsync();
+            string query = "DELETE PiattoUtenteVoto WHERE piattoId = @piattoId and utenteId = @utenteId";
+            SqlCommand cmd = new SqlCommand(query, connection);
+            cmd.Parameters.AddWithValue("@piattoId", piattoId);
+            cmd.Parameters.AddWithValue("@utenteId", utenteId);
+            return await cmd.ExecuteNonQueryAsync();
         }
     }
 }

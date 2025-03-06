@@ -94,6 +94,16 @@
         FOREIGN KEY (RuoloId) REFERENCES Ruolo(Id)
     );
 
+    CREATE TABLE PiattoUtenteVoto
+    (
+        PiattoId INT NOT NULL,
+        UtenteId INT NOT NULL,
+        Voto INT NOT NULL CHECK (Voto BETWEEN 1 AND 10),
+        PRIMARY KEY (PiattoId, UtenteId),
+        FOREIGN KEY (PiattoId) REFERENCES Piatto(Id),
+        FOREIGN KEY (UtenteId) REFERENCES Utente(Id)
+    );
+
     insert into ruolo (nome) values ('superAdmin');
     insert into utente(email,passwordhash) values ('superAdmin@prova.com','AQAAAAIAAYagAAAAEEOoenBKf+Hd6FfY57xO9/Ik08TsH5Vi7H7+cbhDkyqyyoiWpx6sLnFC8WLiJ3ys6g=='); -- per testare il login la password è l' hash di "prova"
     insert into utenteruolo(utenteid,ruoloid) values (1,1); -- diamo il ruolo di superAdmin al primo utente inserito nel DB in questo caso all' utente con l' email: superAdmin@prova.com

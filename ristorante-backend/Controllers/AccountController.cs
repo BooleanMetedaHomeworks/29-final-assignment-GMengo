@@ -148,5 +148,62 @@ namespace ristorante_backend.Controllers
 
             return Ok(new { Message = "Logout effettuato con successo!" });
         }
+
+        [HttpPost("Voto/Piatto/{piattoId}")]
+        public async Task<IActionResult> PostVoto(int piattoId, int Voto)
+        {
+            try
+            {
+                Claim? userEmailClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
+                string? userEmail = userEmailClaim?.Value;
+                Utente u = await _utenteService.GetUserByEmail(userEmail);
+                int affectedRow = await _utenteService.PostVotoPiatto(piattoId, u.Id, Voto);
+                if (affectedRow == 0)
+                    return NotFound();
+                return Ok(affectedRow);
+            }
+            catch (Exception ex) 
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpPut("Voto/Piatto/{piattoId}")]
+        public async Task<IActionResult> PutVoto(int piattoId, int Voto)
+        {
+            try
+            {
+                Claim? userEmailClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
+                string? userEmail = userEmailClaim?.Value;
+                Utente u = await _utenteService.GetUserByEmail(userEmail);
+                int affectedRow = await _utenteService.PutVotoPiatto(piattoId, u.Id, Voto);
+                if (affectedRow == 0)
+                    return NotFound();
+                return Ok(affectedRow);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
+
+        [HttpDelete("Voto/Piatto/{piattoId}")]
+        public async Task<IActionResult> DeleteVoto(int piattoId)
+        {
+            try
+            {
+                Claim? userEmailClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
+                string? userEmail = userEmailClaim?.Value;
+                Utente u = await _utenteService.GetUserByEmail(userEmail);
+                int affectedRow = await _utenteService.DeleteVotoPiatto(piattoId, u.Id);
+                if (affectedRow == 0)
+                    return NotFound();
+                return Ok(affectedRow);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

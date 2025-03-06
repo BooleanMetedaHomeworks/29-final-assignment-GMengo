@@ -108,6 +108,7 @@ namespace ristorante_frontend.ViewModels
                     return;
                 }
                 // Aggiorno la view solo in caso di successo (altrimenti sarei finito nel return di prima)
+                MessageBox.Show("Piatto creato con successo!", "Successo", MessageBoxButton.OK, MessageBoxImage.Information);
                 await LoadPiatti();
             }
             catch (Exception ex)
@@ -135,6 +136,7 @@ namespace ristorante_frontend.ViewModels
                     MessageBox.Show($"Errore nell'eliminazione del piatto: {deleteApiResult.ErrorMessage}", "Errore", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
+                MessageBox.Show("Piatto eliminato con successo!", "Successo", MessageBoxButton.OK, MessageBoxImage.Information);
                 await LoadPiatti(); // Aggiorno il view model solo in caso di successo
                 
             }
@@ -163,6 +165,7 @@ namespace ristorante_frontend.ViewModels
                     MessageBox.Show($"Errore nella modifica del piatto: {updateApiResult.ErrorMessage}", "Errore", MessageBoxButton.OK, MessageBoxImage.Error);
                     return;
                 }
+                MessageBox.Show("Piatto aggiornato con successo!", "Successo", MessageBoxButton.OK, MessageBoxImage.Information);
                 await LoadPiatti(); // Aggiorno il view model solo in caso di successo
 
             }
