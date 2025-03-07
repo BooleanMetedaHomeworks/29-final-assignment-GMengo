@@ -149,7 +149,7 @@ namespace ristorante_backend.Controllers
             return Ok(new { Message = "Logout effettuato con successo!" });
         }
 
-        [HttpPost("Voto/Piatto/{piattoId}")]
+        [HttpPost("/Voto/Piatto/{piattoId}")]
         public async Task<IActionResult> PostVoto(int piattoId, int Voto)
         {
             try
@@ -168,7 +168,7 @@ namespace ristorante_backend.Controllers
             }
         }
 
-        [HttpPut("Voto/Piatto/{piattoId}")]
+        [HttpPut("/Voto/Piatto/{piattoId}")]
         public async Task<IActionResult> PutVoto(int piattoId, int Voto)
         {
             try
@@ -187,7 +187,7 @@ namespace ristorante_backend.Controllers
             }
         }
 
-        [HttpDelete("Voto/Piatto/{piattoId}")]
+        [HttpDelete("/Voto/Piatto/{piattoId}")]
         public async Task<IActionResult> DeleteVoto(int piattoId)
         {
             try
@@ -206,7 +206,7 @@ namespace ristorante_backend.Controllers
             }
         }
 
-        [HttpGet("Voto/Piatti")]
+        [HttpGet("/Voto/Piatti")]
         public async Task<IActionResult> GetVoti()
         {
             try
