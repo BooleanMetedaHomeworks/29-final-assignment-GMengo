@@ -205,5 +205,24 @@ namespace ristorante_backend.Controllers
                 return BadRequest(ex.Message);
             }
         }
+
+        [HttpGet("Voto/Piatti")]
+        public async Task<IActionResult> GetVoti()
+        {
+            try
+            {
+                Claim? userEmailClaim = User.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
+                string? userEmail = userEmailClaim?.Value;
+                Utente u = await _utenteService.GetUserByEmail(userEmail);
+                List<object> list = await _utenteService.GetPiattiVotati(u.Id);
+                if (!list.Any())
+                    return NotFound();
+                return Ok(list);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
     }
 }

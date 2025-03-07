@@ -102,6 +102,13 @@ namespace ristorante_frontend.ViewModels
 
                 // chiamo l' API per inserire il piatto nel DB
                 ApiServiceResult<int> createApiResult = await ApiService.CreatePiatto(SelectedPiatto, _token);
+                if (!_token.Roles.Any())
+                {
+                    MessageBox.Show($"Non hai i permessi di admin per poter eseguire la creazione", "Errore", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    await LoadPiatti();
+                    return;
+                }
+
                 if (createApiResult.Data == null)
                 {
                     MessageBox.Show($"Errore nell'aggiunta del piatto: {createApiResult.ErrorMessage}", "Errore", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -131,6 +138,12 @@ namespace ristorante_frontend.ViewModels
             {
                 VerificaPiatto(SelectedPiatto);
                 var deleteApiResult = await ApiService.DeletePiatto(SelectedPiatto.Id, _token);
+                if (!_token.Roles.Any())
+                {
+                    MessageBox.Show($"Non hai i permessi di admin per poter eseguire l' eliminazione", "Errore", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    await LoadPiatti();
+                    return;
+                }
                 if (deleteApiResult.Data == 0)
                 {
                     MessageBox.Show($"Errore nell'eliminazione del piatto: {deleteApiResult.ErrorMessage}", "Errore", MessageBoxButton.OK, MessageBoxImage.Error);
@@ -160,6 +173,12 @@ namespace ristorante_frontend.ViewModels
             {
                 VerificaPiatto(SelectedPiatto);
                 var updateApiResult = await ApiService.UpdatePiatto(SelectedPiatto, _token);
+                if (!_token.Roles.Any())
+                {
+                    MessageBox.Show($"Non hai i permessi di admin per poter eseguire l' update", "Errore", MessageBoxButton.OK, MessageBoxImage.Warning);
+                    await LoadPiatti();
+                    return;
+                }
                 if (updateApiResult.Data == 0)
                 {
                     MessageBox.Show($"Errore nella modifica del piatto: {updateApiResult.ErrorMessage}", "Errore", MessageBoxButton.OK, MessageBoxImage.Error);

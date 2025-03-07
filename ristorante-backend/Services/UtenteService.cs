@@ -182,5 +182,30 @@ namespace ristorante_backend.Services
             cmd.Parameters.AddWithValue("@utenteId", utenteId);
             return await cmd.ExecuteNonQueryAsync();
         }
+
+        public async Task<List<object>> GetPiattiVotati(int utenteId)
+        {
+            List<object> list = new List<object>();
+            using SqlConnection connection = new SqlConnection(connectionString);
+            await connection.OpenAsync();
+            string query = "Select p.Id as piattoId, p.Nome as piattoNome, puv.Voto as voto from piatto p inner join PiattoUtenteVoto puv on p.id = puv.piattoId where utenteId = @utenteId";
+            SqlCommand cmd = new SqlCommand(query, connection);
+            cmd.Parameters.AddWithValue("@utenteId", utenteId);
+            SqlDataReader reader = await cmd.ExecuteReaderAsync();
+            while (reader.Read())
+            {
+                int piattoId = reader.GetInt32(reader.GetOrdinal("piattoId"));
+                string nome = reader.GetString(reader.GetOrdinal("piattoNome"));
+                int voto = reader.GetInt32(reader.GetOrdinal("voto"));
+                list.Add(new
+                {
+                    PiattoId = piattoId,
+                    Nome = nome,
+                    Voto = voto
+                });
+            }
+            return list;
+
+        }
     }
 }

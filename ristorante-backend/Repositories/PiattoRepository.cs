@@ -266,13 +266,13 @@ namespace ristorante_backend.Repositories
             Tuple<double, int> tupla = new Tuple<double, int>(0,0);
             using SqlConnection connection = new SqlConnection(connectionString);
             await connection.OpenAsync();
-            string query = "SELECT COUNT(*) as c, AVG(VOTO) as a FROM PiattoUtenteVoto where piattoId = @piattoId";
+            string query = "SELECT COUNT(*) as c, AVG(convert(float,VOTO)) as a FROM PiattoUtenteVoto where piattoId = @piattoId";
             SqlCommand cmd = new SqlCommand(query, connection);
             cmd.Parameters.AddWithValue("@piattoId", piattoId);
             SqlDataReader reader = await cmd.ExecuteReaderAsync();
             if (reader.Read())
             {
-                double mediaVoti = reader.GetInt32(reader.GetOrdinal("a"));
+                double mediaVoti = reader.GetDouble(reader.GetOrdinal("a"));
                 int totaleVoti = reader.GetInt32(reader.GetOrdinal("c"));
                 tupla = new Tuple<double, int>(mediaVoti,totaleVoti);
             }

@@ -220,6 +220,7 @@ namespace ristorante_backend.Controllers
             try
             {
                 Tuple<double,int> tupla = await PiattoRepository.GetVoti(piattoId);
+                //(double mediaVoti, int totaleVoti) tupla2 = await PiattoRepository.GetVoti(piattoId); metodo migliore per dichiarare un tupla dove puoi assegnare un nome agli Item
                 if (tupla.Item2 == 0)
                 {
                     return NotFound();
